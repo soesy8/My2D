@@ -7,8 +7,15 @@ namespace MyBird
         public static GameManager Instance { get; private set; }
 
         [SerializeField] private SpawnManager spawnManager;
+        [SerializeField] private GameObject readyUI;
         private int score = 0;
         private bool isGameOver = false;
+
+        public GameObject retryUI;
+        public int Score
+        {
+            get { return score; }
+        }
 
         private void Awake()
         {
@@ -24,6 +31,8 @@ namespace MyBird
         {
             if (spawnManager == null)
                 spawnManager = FindObjectOfType<SpawnManager>();
+            if (readyUI != null)
+                readyUI.SetActive(true);
         }
 
         public void AddScore(int amount)
@@ -33,6 +42,8 @@ namespace MyBird
             Debug.Log("Score: " + score);
             // TODO: UI 업데이트
         }
+        public void StartGame()
+ { isGameOver = false; score = 0; if (spawnManager != null) spawnManager.StartSpawning(); }
 
         public void GameOver()
         {
@@ -50,5 +61,7 @@ namespace MyBird
             }
             // TODO: 게임오버 UI 표시
         }
+        public void Restart() { if (retryUI != null) retryUI.SetActive(false); UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name); }
+
     }
 }

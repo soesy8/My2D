@@ -66,6 +66,9 @@ namespace MyBird
                 {
                     // 대기 -> 플레이로 전환, 첫 입력은 점프로 처리
                     state = State.Playing;
+                    // GameManager에 게임 시작 알림 (스폰 시작)
+                    if (GameManager.Instance != null)
+                        GameManager.Instance.StartGame();
                     Jump();
                 }
                 else if (state == State.Playing)

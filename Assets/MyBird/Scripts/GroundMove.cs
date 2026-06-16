@@ -10,9 +10,11 @@ namespace MyBird
         private void Update()
         {
             transform.Translate(Vector3.left * moveSpeed * Time.deltaTime, Space.World);
-            if (transform.localPosition.x < -8.4f)
+            float width = 8.4f;
+            if (transform.localPosition.x < -width)
             {
-                transform.localPosition = new Vector3(transform.localPosition.x + 8.4f,transform.localPosition.y);
+                // 오른쪽으로 한 칸 옮겨 루핑
+                transform.localPosition = new Vector3(transform.localPosition.x + width * 2f, transform.localPosition.y, transform.localPosition.z);
             }
         }
 

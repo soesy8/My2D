@@ -13,16 +13,6 @@ namespace MyBird
 
         private Coroutine spawnRoutine;
 
-        private void OnEnable()
-        {
-            StartSpawning();
-        }
-
-        private void OnDisable()
-        {
-            StopSpawning();
-        }
-
         public void StartSpawning()
         {
             if (spawnRoutine == null)
@@ -53,9 +43,15 @@ namespace MyBird
 
                 Vector3 spawnPos = transform.position;
                 float y = Random.Range(minHeight, maxHeight);
+                // 보존된 z 값을 유지
                 spawnPos.y = y;
+                float z = spawnPos.z;
 
-                Instantiate(pipePrefab, spawnPos, Quaternion.identity);
+                var instance = Instantiate(pipePrefab, spawnPos, Quaternion.identity);
+                // 보장: 인스턴스의 z를 원래대로 유지
+                var p = instance.transform.position;
+                p.z = z;
+                instance.transform.position = p;
                 // 한 번에 하나씩 스폰하므로 루프가 다시 대기
             }
         }
