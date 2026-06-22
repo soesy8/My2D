@@ -26,11 +26,16 @@ namespace My2DGame
         private bool isMove = false;
         private bool isRun = false;
 
+        //공격 중 체크 - 자체추가
+        private bool isAttacking = false;
+
         //반전
         private bool isFacingRight = true;
 
         //점프 - y축의 속도를 jumpforce 값으로설정
         [SerializeField] private float jumpForce = 10f;
+
+        private TouchingDirection touchingDirecion;
         #endregion
 
         public bool IsMove
@@ -73,6 +78,7 @@ namespace My2DGame
         {
             rb = GetComponent<Rigidbody2D>();
             animator = GetComponent<Animator>();
+            touchingDirecion = GetComponent<TouchingDirection>();
         }
 
         private void Start()
@@ -85,7 +91,7 @@ namespace My2DGame
         {
             Move();
             //애니메이션 셋팅
-            animator.SetFloat(AnimationString.yVelocity, jumpForce);
+            animator.SetFloat(AnimationString.yVelocity, rb.linearVelocity.y);
         }
 
         #endregion
@@ -113,9 +119,23 @@ namespace My2DGame
 
         public void OnJump(InputAction.CallbackContext context)
         {
-            if (context.started)
+            if (animator.GetBool(AnimationString.cannotMove))
+                return;
+
+            if (context.started && touchingDirecion.IsGround)
             {
                 Jump();
+            }
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            if (animator.GetBool(AnimationString.cannotMove))
+                return;
+
+            if (context.started)
+            {
+                Attack();
             }
         }
 
@@ -130,6 +150,15 @@ namespace My2DGame
         {
             if (rb == null) return;
 
+            if (animator.GetBool(AnimationString.cannotMove))
+            {
+                rb.linearVelocity = new Vector2(
+                    0f,
+                    rb.linearVelocity.y
+                );
+                return;
+            }
+
             float speed = IsRun ? runSpeed : moveSpeed;
 
             rb.linearVelocity = new Vector2(
@@ -137,7 +166,7 @@ namespace My2DGame
                 rb.linearVelocity.y
             );
         }
-        
+
         //방향반전
         void SetFacingDirection(Vector2 moveinput)
         {
@@ -153,8 +182,23 @@ namespace My2DGame
 
         void Jump()
         {
-            animator.SetTrigger(AnimationString.jumpTriger);
+            if (!touchingDirecion.IsGround) return;
+
+            animator.SetTrigger(AnimationString.jumpTrigger);
+
             rb.linearVelocity = new Vector2(rb.linearVelocityX, jumpForce);
+        }
+
+        void Attack()
+        {
+            if (isAttacking) return;
+            isAttacking = true;
+            animator.SetTrigger(AnimationString.attackTrigger);
+        }
+
+        void EndAttack()
+        {
+            isAttacking = false;
         }
 
         #endregion
