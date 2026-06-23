@@ -36,6 +36,8 @@ namespace My2DGame
         [SerializeField] private float jumpForce = 10f;
 
         private TouchingDirection touchingDirecion;
+
+        private bool cannotMove;
         #endregion
 
         public bool IsMove
@@ -71,6 +73,11 @@ namespace My2DGame
             }
         }
 
+        public bool CannotMove
+        {
+            get { return animator.GetBool(AnimationString.cannotMove); }
+        }
+
 
         #region Unity Methods
 
@@ -89,6 +96,8 @@ namespace My2DGame
 
         private void FixedUpdate()
         {
+            if (rb == null) return;
+
             Move();
             //애니메이션 셋팅
             animator.SetFloat(AnimationString.yVelocity, rb.linearVelocity.y);
@@ -131,6 +140,9 @@ namespace My2DGame
         public void OnAttack(InputAction.CallbackContext context)
         {
             if (animator.GetBool(AnimationString.cannotMove))
+                return;
+
+            if (!touchingDirecion.IsGround)
                 return;
 
             if (context.started)
